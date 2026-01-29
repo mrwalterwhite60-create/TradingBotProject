@@ -228,15 +228,37 @@ async def execute_prediction(update: Update, context: ContextTypes.DEFAULT_TYPE,
     except Exception as e:
         await context.bot.send_message(chat_id=update.effective_chat.id, text=f"❌ Error: {e}")
 
+# --- MINI WEB SERVER FOR FREE CLOUD HOSTING ---
+from fastapi import FastAPI
+import uvicorn
+import threading
+
+app = FastAPI()
+
+@app.get("/")
+def health_check():
+    return {"status": "Quantum Trader bot is running", "version": "2.1.0"}
+
+def run_web_server():
+    # Use port from environment variable (required by Render/Koyeb)
+    port = int(os.environ.get("PORT", 8080))
+    uvicorn.run(app, host="0.0.0.0", port=port)
+
 if __name__ == '__main__':
     if not TOKEN:
         print("Error: TELEGRAM_BOT_TOKEN_PROJ2 is not set.")
         sys.exit(1)
+
+    # 1. Start Web Server in a separate thread (for Render health checks)
+    print(f"[SYSTEM] Starting Web Server on port {os.environ.get('PORT', '8080')}...")
+    web_thread = threading.Thread(target=run_web_server, daemon=True)
+    web_thread.start()
         
+    # 2. Start Telegram Bot
+    print("[SYSTEM] Starting Telegram Bot Service...")
     application = ApplicationBuilder().token(TOKEN).build()
     
     application.add_handler(CommandHandler('start', start))
     application.add_handler(CallbackQueryHandler(button_handler))
     
-    print("Bot is running...")
     application.run_polling()
