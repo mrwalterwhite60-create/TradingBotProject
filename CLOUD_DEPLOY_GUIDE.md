@@ -18,7 +18,7 @@ I have created a script that handles all technical steps for you.
 4. **Settings**:
    - **Runtime**: `Python 3`
    - **Build Command**: `pip install -r requirements.txt`
-   - **Start Command**: `python backend/bot_main.py`
+   - **Start Command**: `python -u backend/bot_main.py`
    - **Instance Type**: Select **Free** ($0/month).
 
 ## Step 4: Add Environment Variables (IMPORTANT)
